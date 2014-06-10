@@ -162,7 +162,7 @@ class Units {
                     if ($i<10) $troophave=$village->unitarray['u'.$Gtribe.$i];
                     if ($i==10)$troophave=$village->unitarray['u'.floor(intval($Gtribe)+1)*$i];
                     if ($i==11)$troophave=$village->unitarray['hero'];
-                                        
+
                     if (intval($post['t'.$i]) > $troophave){
                         $form->addError("error","You can't send more units than you have");
                         break;
@@ -537,26 +537,30 @@ header("Location: banned.php");
 if($session->access != BANNED){
         $enforce=$database->getEnforceArray($post['ckey'],0);
         $enforceoasis=$database->getOasisEnforceArray($post['ckey'], 0);
+
         if(($enforce['from']==$village->wid) || ($enforce['vref']==$village->wid) || ($enforceoasis['conqured']==$village->wid)){
             $to = $database->getVillage($enforce['from']);
             $Gtribe = "";
             if ($database->getUserField($to['owner'],'tribe',0) ==  '2'){ $Gtribe = "1"; } else if  ($database->getUserField($to['owner'],'tribe',0) == '3'){ $Gtribe =  "2"; } else if ($database->getUserField($to['owner'],'tribe',0) ==  '4'){ $Gtribe = "3"; }else if  ($database->getUserField($to['owner'],'tribe',0) == '5'){ $Gtribe =  "4"; }
 
-                    for($i=1; $i<10; $i++){
+                    for($i=1; $i<11; $i++){
                         if(isset($post['t'.$i])){
-                            if($i!=10){
-                                if ($post['t'.$i] > $enforce['u'.$Gtribe.$i])
-                                {
-                                    $form->addError("error","You can't send more units than you have");
-                                    break;
-                                }
 
-                                if($post['t'.$i]<0)
-                                {
-                                    $form->addError("error","You can't send negative units.");
-                                    break;
-                                }
-                            }
+                    if ($i<10) $troophave=$enforce['u'.$Gtribe.$i];
+                    if ($i==10)$troophave=$enforce['u'.floor(intval($Gtribe)+1)*$i];
+                                        
+                    if (intval($post['t'.$i]) > $troophave){
+                        $form->addError("error","You can't send more units than you have");
+                        break;
+                    }
+                    if(intval($post['t'.$i])<0){
+                        $form->addError("error","You can't send negative units.");
+                        break;
+                    }
+                    if(preg_match('/[^0-9]/',$post['t'.$i])){
+                        $form->addError("error","Special characters can't entered");
+                        break;
+                    } 
                         } else {
                         $post['t'.$i.'']='0';
                         }
